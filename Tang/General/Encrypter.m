@@ -20,7 +20,7 @@ clc
 clear
 
 %% Parts that have variables
-LoadPath = 'E:\Tang\data\23. 221116_AraCTiming\DIV4';
+LoadPath = 'G:\Imaging\40. 230309_FV1000_CGC_B6cKOBasalCurve';
 CommonWord = "DIV";
 
 %% Functions
