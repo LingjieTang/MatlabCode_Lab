@@ -16,7 +16,7 @@ WithdrawButton = uicontrol('Parent', hFig,  'Position', [60 28 60 28] ...
 DepositButton = uicontrol('Parent', hFig, 'Position', [180 28 60 28] ...
       , 'Tag', 'DepositButton', 'String', 'deposit');
 
-set(WithdrawButton, 'Callback', @(o,e)Withdraw_Callback(o,e));
+set(WithdrawButton, 'Callback', @Withdraw_Callback);
 set(DepositButton, 'Callback', @(o,e)Deposit_Callback(o,e));
 
 function Withdraw_Callback(o,~)
@@ -26,5 +26,15 @@ function Withdraw_Callback(o,~)
     BalanceBox =  findobj(hFig, 'Tag', 'BalanceBox');
     Balance = str2double(BalanceBox.String);
     Balance = Balance - Input;
+    BalanceBox.String = Balance;
+end
+
+function Deposit_Callback(o,~)
+    hFig = o.Parent;
+    InputBox = findobj(hFig, 'Tag', 'InputBox');
+    Input = str2double(InputBox.String);
+    BalanceBox =  findobj(hFig, 'Tag', 'BalanceBox');
+    Balance = str2double(BalanceBox.String);
+    Balance = Balance + Input;
     BalanceBox.String = Balance;
 end
