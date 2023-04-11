@@ -1,7 +1,7 @@
 classdef Point2D
     properties
         x
-        y
+        y 
     end
     properties(Dependent)
         r
@@ -13,9 +13,9 @@ classdef Point2D
             obj.y = y;
         end
         
-        function get.r(obj)
+        function r = get.r(obj)
            r = sqrt(obj.x^2+obj.y^2);
+           disp('get.r called');
         end
     end
 end
-
