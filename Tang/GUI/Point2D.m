@@ -6,9 +6,6 @@ classdef Point2D < handle
     properties(Dependent)
         r
     end
-    events
-        changed
-    end
     
     methods
         function obj = Point2D(x,y)
@@ -18,12 +15,10 @@ classdef Point2D < handle
         function r = get.r(obj)
            r = obj.x * obj.y;
         end
-        function obj = DataChanged(obj)
-            obj.notify('changed',TimeStamp());
-        end
-        function obj = addx1(obj,scr)
-            disp(['Listener called at',num2str(scr.ts)]);
-            scr.Source.x = scr.Source.x + 1;
+        function obj = add2x(obj)
+            Pub = Publisher();
+            Pub.addlistener('changed', @addx1)
+            Pub.DataChanged(obj.x);
         end
     end
 end
