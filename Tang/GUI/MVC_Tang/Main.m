@@ -1,2 +1,2 @@
 ModelObj = Model(500);
-ViewObj = View(ModelObj);
+ViewObj = View.GetView(ModelObj);

@@ -12,7 +12,7 @@ classdef View < handle
         InputBox;
     end
 
-    methods
+    methods(Access = private)
         function obj = View(ModelObj)
             if(nargin == 0)
                  obj.ModelObj = Model(100);
@@ -24,7 +24,18 @@ classdef View < handle
             obj.ModelObj.addlistener('BalanceChanged', @obj.UpdateBalanceBox);
             obj.AttachToController();
         end
-
+    end
+    methods(Static)
+        function obj = GetView(ModelObj)
+            persistent LocalViewObj;
+            if isempty(LocalViewObj)||~isvalid(LocalViewObj)
+                LocalViewObj = View(ModelObj); 
+            end
+                obj = LocalViewObj;            
+        end
+    end
+    
+    methods
         function obj = MakeController(obj)
             obj = Controller(obj);
         end
