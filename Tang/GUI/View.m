@@ -39,7 +39,7 @@ classdef View < handle
                 , 'Tag', 'BalanceBox', 'String', obj.ModelObj.Balance);
             obj.NumBox =  uicontrol('Parent', obj.hFig, 'Style', 'edit', 'Position', [100 85 180 28] ...
                 , 'Tag', 'NumBox');
-            obj.UpdateBalance();
+            %obj.UpdateBalance();
         end
         function UpdateBalance(obj,scr,data)
             set(obj.BalanceBox, 'String',num2str(obj.ModelObj.Balance));
