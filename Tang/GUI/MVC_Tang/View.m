@@ -12,19 +12,29 @@ classdef View < handle
         InputBox;
     end
 
-    methods
+    methods(Access = private)
         function obj = View(ModelObj)
-            if(nargin == 0)
-                 obj.ModelObj = Model(100);
-            else
-                 obj.ModelObj = ModelObj;
-            end
+            obj.ModelObj = ModelObj;
             obj.ControllerObj = obj.MakeController();
             obj.BuildUI();
             obj.ModelObj.addlistener('BalanceChanged', @obj.UpdateBalanceBox);
             obj.AttachToController();
         end
-
+    end
+    methods(Static)
+        function obj = GetView(ModelObj)
+            persistent LocalViewObj;
+            if(nargin == 0)
+                 ModelObj = Model(100);
+            end
+            if isempty(LocalViewObj)||~isvalid(LocalViewObj)
+                LocalViewObj = View(ModelObj); 
+            end
+                obj = LocalViewObj;            
+        end
+    end
+    
+    methods
         function obj = MakeController(obj)
             obj = Controller(obj);
         end
@@ -52,7 +62,7 @@ classdef View < handle
 
         function  AttachToController(obj)
             controller = obj.ControllerObj;
-            set(obj.DepositButton, 'callback', @controller.DepositCallback);
+            obj.DepositButton.Callback = @controller.DepositCallback;
             set(obj.WithdrawButton, 'callback', @controller.WithdrawCallback);
          end
 
