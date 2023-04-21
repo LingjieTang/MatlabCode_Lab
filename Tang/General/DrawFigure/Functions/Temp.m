@@ -4,30 +4,16 @@ function LineChart2(app)
 %set HandleVisibility on to let it become the current figure
 Fig = uifigure('Name', "Drawn Figure",'HandleVisibility','on');
 
-GridLayout = uigridlayout('Parent', Fig);
-GridLayout.ColumnWidth = {'1x'};
-GridLayout.RowHeight = {'1x'};
-GridLayout.ColumnSpacing = 0;
-GridLayout.RowSpacing = 0;
-GridLayout.Padding = [0 0 0 0];
-GridLayout.Scrollable = 'on';
+%set GridLayout to align the axes
+GridLayout = CreateGridLayout(Fig);
 
-app.Dataset = load(".\Examples\Dataset.mat").Dataset;
-Dataset = app.Dataset;
-%% Initial settings
-%Parameters that often need to be changed
-Save = false; %Save data (figures and result table) or not
-ShowSig = false; %Show significance or not (only show when Datagroup = 2)
-XLabel = 'DIV';
-XTickLabel = [3, 4, 5, 6, 7, 9, 11]; %The label for the x-axis
-
-% Data loading
-%Find the first non-empty data in dataset
-[r, c] = find(cellfun(@isempty, Dataset) == 0, 1);
-DataGroup = size(Dataset, 1);
+%% Data loading
+%Find the first non-empty data in app.Dataset
+[r, c] = find(cellfun(@isempty, app.Dataset) == 0, 1);
+DataGroup = size(app.Dataset, 1);
 
 GroupNames = {'control', 'cKO'};
-DataNumber = size(Dataset, 2);
+DataNumber = size(app.Dataset, 2);
 
 
 %Parameters that seldom need to be changed
@@ -37,9 +23,6 @@ for nn = 1:DataNumber
     NumberNames{nn} = [XLabel, '_', num2str(XTickLabel(nn))];
 end
 
-FontName = 'Arial';
-FontSize = 10;
-Resolution = 1200; %Resolution of output figures
 %Output a result table to store key information including the mean value,
 %the S.E.M, the number of samples, the significance
 varNames = {'Type', 'Mean', 'Sem', 'SampleNumber', 'Significance'};
@@ -48,7 +31,7 @@ ResultT = table('Size', sz, 'VariableTypes', {'string', 'double', 'double', 'dou
 OutlierRemove = 'quartiles'; %Removal of outliers. Use 'none' to disable, or 'quartiles' to enable
 DataAnalyze = 1:4;
 %% Main program
-for ii = DataAnalyze %1:size(app.Dataset{1,1}, 2) %Analyze each column in the table
+for ii = DataAnalyze %1:size(app.app.Dataset{1,1}, 2) %Analyze each column in the table
     AxisHandle = cell(1, length(DataAnalyze));
     ActiveAxisHandle = find(DataAnalyze == ii, 1);
     AxisHandle{ActiveAxisHandle} = uiaxes(GridLayout);
@@ -56,7 +39,7 @@ for ii = DataAnalyze %1:size(app.Dataset{1,1}, 2) %Analyze each column in the ta
     AxisHandle{ActiveAxisHandle}.Layout.Row = ceil(ActiveAxisHandle/3) ;
     AxisHandle{ActiveAxisHandle}.Layout.Column = mod(ActiveAxisHandle -1 , 3) + 1;
 
-    Title = string(app.Dataset{1, 1}.Properties.VariableNames(ii)); %Get the current column title
+    Title = string(app.app.Dataset{1, 1}.Properties.VariableNames(ii)); %Get the current column title
     %figure('Name', Title);
     Mean = zeros(DataGroup, DataNumber);
     Sem = zeros(DataGroup, DataNumber);
@@ -65,21 +48,21 @@ for ii = DataAnalyze %1:size(app.Dataset{1,1}, 2) %Analyze each column in the ta
     for jj = 1:DataGroup %Analyze each group
 
         for xx = 1:DataNumber %Analyze each sub-group
-            if(~isempty(app.Dataset{jj, xx}))
-                Mean(jj, xx) = mean(app.Dataset{jj, xx}.(Title));
-                Sem(jj, xx) = std(app.Dataset{jj, xx}.(Title)) / sqrt(length(app.Dataset{jj, xx}.(Title)));
+            if(~isempty(app.app.Dataset{jj, xx}))
+                Mean(jj, xx) = mean(app.app.Dataset{jj, xx}.(Title));
+                Sem(jj, xx) = std(app.app.Dataset{jj, xx}.(Title)) / sqrt(length(app.app.Dataset{jj, xx}.(Title)));
                 %Store Mean and Sem in the ResultTable
                 DataPosition = (jj - 1) * DataNumber +xx;
                 % ResultT.Type(DataPosition) = [GroupNames{jj}, '_',
                 % NumberNames{xx}]; ResultT.Mean(DataPosition) = Mean(jj,
                 % xx); ResultT.Sem(DataPosition) = Sem(jj, xx);
                 % ResultT.SampleNumber(DataPosition) =
-                % length(app.Dataset{jj, xx}.(Title));
+                % length(app.app.Dataset{jj, xx}.(Title));
 
                 if (DataGroup == 2 && jj == 2 && ShowSig) %Calculate signiface when only 2 groups
-                    p = Independent_Two_Sample_TTest(app.Dataset{1, xx}.(Title), app.Dataset{2, xx}.(Title),OutlierRemove);
+                    p = Independent_Two_Sample_TTest(app.app.Dataset{1, xx}.(Title), app.app.Dataset{2, xx}.(Title),OutlierRemove);
                     ResultT.Significance(DataPosition) = p;
-                    YMaxNow = Significance_Line(xx, xx, app.Dataset{1, xx}.(Title), app.Dataset{2, xx}.(Title), p, 'k', FontName, FontSize, false);
+                    YMaxNow = Significance_Line(xx, xx, app.app.Dataset{1, xx}.(Title), app.app.Dataset{2, xx}.(Title), p, 'k', FontName, FontSize, false);
                     YMax = max(YMax, YMaxNow);
                     hold on
                 end
@@ -168,4 +151,14 @@ if (Save)
     writetable(ResultT, TabPath);
 end
 
+end
+
+function GridLayout = CreateGridLayout(Fig)
+    GridLayout = uigridlayout('Parent', Fig);
+    GridLayout.ColumnWidth = {'1x'};
+    GridLayout.RowHeight = {'1x'};
+    GridLayout.ColumnSpacing = 0;
+    GridLayout.RowSpacing = 0;
+    GridLayout.Padding = [0 0 0 0];
+    GridLayout.Scrollable = 'on';
 end
