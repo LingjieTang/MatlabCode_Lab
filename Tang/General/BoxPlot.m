@@ -34,20 +34,21 @@ Dataset{1, 5} = [readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendr
                     readtable('G:\Imaging\29. 221208_FV1000_GCs_ICR_BasalCurve\DIV9\trace\Data_by_Matlab.xlsx')];
 Dataset{1, 6} = readtable('G:\Imaging\29. 221208_FV1000_GCs_ICR_BasalCurve\DIV11\trace\Data_by_Matlab.xlsx');
 
-Dataset{2, 1} = Dataset{1, 1};
+%Dataset{2, 1} = Dataset{1, 1};
 Dataset{2, 2} = readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV4_TTXAPV\trace\Data_by_Matlab.xlsx');
 Dataset{2, 3} = readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV5_TTXAPV\trace\Data_by_Matlab.xlsx');
 Dataset{2, 4} = readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV7_TTXAPV\trace\Data_by_Matlab.xlsx');
 Dataset{2, 5} = readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV9_TTXAPV\trace\Data_by_Matlab.xlsx');
 Dataset{2, 6} = readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV11_TTXAPV\trace\Data_by_Matlab.xlsx');
 
-% Dataset{3,1} = Dataset{1,1};
-% Dataset{3,2} =  readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV4_15mMK+\trace\Data_by_Matlab.xlsx');
-% Dataset{3,3} = readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV5_15mMK+\trace\Data_by_Matlab.xlsx');
-% Dataset{3,4} = readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV7_15mMK+\trace\Data_by_Matlab.xlsx');
-% Dataset{3,5} =  readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV9_15mMK+\trace\Data_by_Matlab.xlsx');
-% Dataset{3,6} =  readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV11_15mMK+\trace\Data_by_Matlab.xlsx');
+%Dataset{3,1} = Dataset{1,1};
+Dataset{3,2} =  readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV4_15mMK+\trace\Data_by_Matlab.xlsx');
+Dataset{3,3} = readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV5_15mMK+\trace\Data_by_Matlab.xlsx');
+Dataset{3,4} = readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV7_15mMK+\trace\Data_by_Matlab.xlsx');
+Dataset{3,5} =  readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV9_15mMK+\trace\Data_by_Matlab.xlsx');
+Dataset{3,6} =  readtable('G:\Imaging\31. 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV11_15mMK+\trace\Data_by_Matlab.xlsx');
 
+save Dataset.mat Dataset -mat
 %Parameters that seldom need to be changed
 NumberNames = cell(DataNumber, 1); %Specify the names of each sub-group by catenating XLabel and XTickLabel
 
