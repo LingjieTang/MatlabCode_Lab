@@ -1,6 +1,7 @@
-function LineChart2(app)
 %To draw figures after "DrawButton" is pushed.
+function DrawData(app)
 %% Create a new uifigure
+
 %set HandleVisibility on to let it become the current figure
 Fig = uifigure('Name', "Drawn Figure",'HandleVisibility','on');
 
@@ -8,6 +9,7 @@ Fig = uifigure('Name', "Drawn Figure",'HandleVisibility','on');
 GridLayout = CreateGridLayout(Fig);
 
 %% Data loading
+
 %Find the first non-empty data in app.Dataset
 [r, c] = find(cellfun(@isempty, app.Dataset) == 0, 1);
 DataGroup = size(app.Dataset, 1);
@@ -29,7 +31,7 @@ varNames = {'Type', 'Mean', 'Sem', 'SampleNumber', 'Significance'};
 sz = [DataGroup * DataNumber, length(varNames)];
 ResultT = table('Size', sz, 'VariableTypes', {'string', 'double', 'double', 'double', 'double'}, 'VariableNames', varNames);
 OutlierRemove = 'quartiles'; %Removal of outliers. Use 'none' to disable, or 'quartiles' to enable
-DataAnalyze = 1:4;
+DataAnalyze = 1:2;
 %% Main program
 for ii = DataAnalyze %1:size(app.app.Dataset{1,1}, 2) %Analyze each column in the table
     AxisHandle = cell(1, length(DataAnalyze));
