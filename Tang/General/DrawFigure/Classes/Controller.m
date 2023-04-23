@@ -11,11 +11,11 @@ classdef Controller < handle
         end
 
         function DataChangedCallback(obj, varargin)
-            obj.ModelObj.ChangeData(varargin{:});
+            obj.ModelObj.DataModel.ChangeData(varargin{:});
         end
 
         function ParametersChangedCallback(obj, varargin)
-            obj.ModelObj.ChangeParameters(varargin{:});
+            obj.ModelObj.ParametersModel.ChangeParameters(varargin{:});
         end
 
         function DrawButtonPushedCallback(obj)
