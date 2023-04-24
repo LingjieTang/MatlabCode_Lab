@@ -9,6 +9,10 @@ classdef View < handle
         hAxis;
         GridLayout;
         hFigs;
+        
+    end
+
+    properties(Dependent)
         PartialAnalyze;
     end
 
@@ -24,6 +28,7 @@ classdef View < handle
     end
 
     methods(Access = private)
+
         function obj = View(app)
             obj.appObj = app;
             obj.ModelObj = app.ModelObj;
@@ -34,7 +39,6 @@ classdef View < handle
 
             obj.CreateUIFig();
 
-            obj.PartialAnalyze = obj.ModelObj.DataModel.PartialAnalyze;
             obj.hAxis = cell(1, length(obj.PartialAnalyze));
             obj.hFigs = cell(1, length(obj.PartialAnalyze));
             obj.UpdateData();
@@ -207,6 +211,10 @@ classdef View < handle
             for ii = 1:AxesNum
                 delete(obj.hAxis{ii});
             end
+        end
+
+        function PartialAnalzye = get.PartialAnalyze(obj)
+            PartialAnalzye = obj.ModelObj.DataModel.PartialAnalyze;
         end
     end
 end

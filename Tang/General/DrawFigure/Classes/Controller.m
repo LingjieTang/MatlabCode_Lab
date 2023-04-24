@@ -12,7 +12,9 @@ classdef Controller < handle
 
         function DataChangedCallback(obj, varargin)
             if(any(cellfun(@(x) strcmp('PartialAnalyze', x), varargin)))
-                obj.ViewObj.ClearAllAxes();
+                if(~isempty(obj.ViewObj))%In case customer change value before DrawButton pushed
+                    obj.ViewObj.ClearAllAxes();
+                end
             end
             obj.ModelObj.DataModel.ChangeData(varargin{:});
         end
