@@ -3,7 +3,7 @@ classdef DataModel < handle
     %figure to present the data
 
     properties
-        Dataset = load ("Dataset.mat").Dataset;
+        RawDataset = load ("Dataset.mat").Dataset;
         FigureType = 'Line';
         OutlierRemove = 'none';
         ShowError = false;
@@ -17,6 +17,7 @@ classdef DataModel < handle
     end
 
     properties(Hidden, Dependent)
+        Dataset;
         DataPoints;
         Mean;
         Error;
@@ -37,6 +38,9 @@ classdef DataModel < handle
             Fields = fields(p.Results);
             for ii = 1:length(Fields)
                 obj.(Fields{ii}) = p.Results.(Fields{ii});
+                if(obj.PartialAnalyze == 0)
+                    obj.PartialAnalyze = size(obj.RawDataset, 2);
+                end
             end
             obj.notify('DataChanged');
         end
@@ -47,6 +51,18 @@ classdef DataModel < handle
             for ii = 1:length(DataPropertiesName)
                 DataPropertiesDefault = obj.(DataPropertiesName{ii});
                 obj.DataParser.addParameter(DataPropertiesName{ii}, DataPropertiesDefault);
+            end
+        end
+
+        function Dataset = get.Dataset(obj)
+            Dataset = cellfun(@(x) obj.TakePartialData(x), obj.RawDataset, UniformOutput=false);
+        end
+
+        function PartialData = TakePartialData(obj, TotalData)
+            if(isempty(TotalData))
+                PartialData = [];
+            else
+                PartialData = TotalData(:, obj.PartialAnalyze);
             end
         end
 
@@ -63,12 +79,12 @@ classdef DataModel < handle
         end
 
         function Result = GetMeanOrErrorOrDataPoints (obj, Type)
-            Empty = cellfun(@isempty, obj.Dataset);
-            DataGroup = size(obj.Dataset, 1);
-            DataNumber = size(obj.Dataset, 2);
+            Empty = cellfun(@isempty, obj.RawDataset);
+            DataGroup = size(obj.RawDataset, 1);
+            DataNumber = size(obj.RawDataset, 2);
 
             [r, c] = find(Empty == false, 1);
-            DataExample = obj.Dataset{r, c};
+            DataExample = obj.RawDataset{r, c};
             ColumnNum = size(DataExample, 2);
             Result = NaN(ColumnNum, DataGroup, DataNumber);
             if(strcmp(Type, 'MyDataPoints'))
@@ -80,7 +96,7 @@ classdef DataModel < handle
                 for jj = 1:DataGroup
                     for xx = 1:DataNumber
                         if(Empty(jj, xx) == false)
-                            DataAnalyzing = obj.Dataset{jj, xx}.(Title);
+                            DataAnalyzing = obj.RawDataset{jj, xx}.(Title);
                             Result(ii, jj, xx) = feval(Type, DataAnalyzing);
                         elseif(strcmp(Type, 'MyDataPoints'))
                             Result{ii, jj, xx} = [];
@@ -94,9 +110,9 @@ classdef DataModel < handle
 end
 
 function Result = MySem(DataAnalyzing)
-    Result = std(DataAnalyzing) / sqrt(length(DataAnalyzing));
+Result = std(DataAnalyzing) / sqrt(length(DataAnalyzing));
 end
 
 function Result = MyDataPoints(DataAnalyzing)
-    Result = num2cell(DataAnalyzing, 1);
+Result = num2cell(DataAnalyzing, 1);
 end

@@ -47,9 +47,7 @@ classdef View < handle
             for ii = obj.PartialAnalyze %For each column, create an axis
                 ActivehAxis = find(obj.PartialAnalyze == ii, 1);
                 if(~isempty(obj.hAxis{ActivehAxis}))
-                    delete(obj.hAxis{ActivehAxis});
-                    % close(obj.hUIFig);
-                    % obj.CreateUIFig();
+                    delete(obj.hAxis{ActivehAxis});%{ActivehAxis}
                 end
                 obj.hAxis{ActivehAxis} = uiaxes(obj.GridLayout);
                 set(obj.hUIFig, 'CurrentAxes', obj.hAxis{ActivehAxis});
@@ -84,15 +82,17 @@ classdef View < handle
             obj.UpdateParameters();
         end
 
+
+
         function DrawSpecificFig(obj, ii)
             Dataset = obj.ModelObj.DataModel.Dataset;
             DataGroup = size(Dataset, 1);
             DataNumber = size(Dataset, 2);
             FigureType = obj.ModelObj.DataModel.FigureType;
 
-                
-                Mean = squeeze(obj.ModelObj.DataModel.Mean(ii, :, :));
-                Error = squeeze(obj.ModelObj.DataModel.Error(ii, :, :));
+
+            Mean = squeeze(obj.ModelObj.DataModel.Mean(ii, :, :));
+            Error = squeeze(obj.ModelObj.DataModel.Error(ii, :, :));
 
             for jj = 1:DataGroup
                 switch FigureType
@@ -101,33 +101,28 @@ classdef View < handle
                         obj.hFigs{jj}.Marker = 'o';
                         obj.hFigs{jj}.MarkerSize = 0.8 *obj.ModelObj.ParametersModel.FontSize;
                     case 'Bar'
-                       obj.hFigs{jj} = bar(1:DataNumber, Mean.', 'grouped');
+                        obj.hFigs{jj} = bar(1:DataNumber, Mean.', 'grouped');
                     case 'Box'
-                       DataPoints = squeeze(obj.ModelObj.DataModel.DataPoints(ii, :, :));
-                       yData = cell2mat(DataPoints(:));
-                       
-                      DataSize = cellfun(@(x) size(x,1), DataPoints);
-                      %DataSizeExpand =  DataSize(:);
-                      xGroupNum = sum(DataSize);
-                      xGroup = ones(sum(xGroupNum), 1);
-                      xOrder = [1, cumsum(xGroupNum)];
+                        DataPoints = squeeze(obj.ModelObj.DataModel.DataPoints(ii, :, :));
+                        yData = cell2mat(DataPoints(:));
 
-                      Category = cell(DataGroup, DataNumber);
-                      for xx = 1:DataGroup
-                          for zz = 1:DataNumber
-                                   if(DataSize(xx,zz)~=0)
-                                       Category{xx,zz} = repmat(xx,DataSize(xx,zz), 1);
-                                   end
-                          end
-                      end
-                      Category = categorical(cell2mat(Category(:)));
+                        DataSize = cellfun(@(x) size(x,1), DataPoints);
+                        xGroupNum = sum(DataSize);
+                        xGroup = ones(sum(xGroupNum), 1);
+                        xOrder = [1, cumsum(xGroupNum)];
 
+                        Category = cell(DataGroup, DataNumber);
+                        for Column = 1:DataNumber
+                            xGroup(xOrder(Column): xOrder(Column+1)) = Column;
+                            for  Row = 1:DataGroup
 
-                      for xx = 1:DataNumber
-                          xGroup(xOrder(xx): xOrder(xx+1)) = xx;
-                      end
-
-                       obj.hFigs{jj} = boxchart(xGroup , yData, 'GroupByColor', Category);
+                                if(DataSize(Row,Column)~=0)
+                                    Category{Row,Column} = repmat(Row,DataSize(Row,Column), 1);
+                                end
+                            end
+                        end
+                        Category = categorical(cell2mat(Category(:)));
+                        obj.hFigs{jj} = boxchart(xGroup , yData, 'GroupByColor', Category);
                 end
                 hold on
 
@@ -136,21 +131,34 @@ classdef View < handle
 
         function UpdateParameters(obj, src, event)
             Parameters = obj.ModelObj.ParametersModel;
-            Dataset = obj.ModelObj.DataModel.Dataset;
+            RawDataset = obj.ModelObj.DataModel.Dataset;
 
             for ii = 1:length(obj.PartialAnalyze)
                 ActivehAxis = ii;
 
                 ax = obj.hAxis{ActivehAxis};
+                xticks(1:size(RawDataset, 2))
                 XTickLabel = string(Parameters.XTickLabel);
                 XLabel = string(Parameters.XLabel);
                 FontName = string(Parameters.FontName);
                 FontSize = Parameters.FontSize;
-                Title = string(Dataset{1,1}.Properties.VariableNames(ii)); %Get the current column title
+                Title = string(RawDataset{1,1}.Properties.VariableNames(ii)); %Get the current column title
+
                 set(ax,'xticklabel', XTickLabel, 'Fontname', FontName, 'FontSize', FontSize);
                 xlabel(ax, XLabel, 'Fontname', FontName, 'FontSize', FontSize);
                 ylabel(ax, Title, 'Fontname', FontName, 'FontSize', FontSize, 'Interpreter', 'none');
             end
+
+            %Resize the y-axis
+            ylim auto
+            LimitY = ylim;
+            %LimitY(2) = max(LimitY(2), YMax);
+            ylim([LimitY(1), LimitY(2) + 0.04 * (LimitY(2) - LimitY(1))])
+
+            %Resize the x-axis
+            xlim auto
+            LimitX = xlim;
+            xlim([LimitX(1) - 0.04 * (LimitX(2) - LimitX(1)), LimitX(2) + 0.04 * (LimitX(2) - LimitX(1))])
 
         end
 
@@ -159,7 +167,7 @@ classdef View < handle
         end
 
         % Changes arrangement of the app based on UIFigure width
-        function UpdateGridLayout(obj, event)
+        function UpdateGridLayout(obj, ~)
             MiniWidth = 576;
             currentFigureWidth = obj.hUIFig.Position(3);
             if(currentFigureWidth <= MiniWidth)
@@ -192,22 +200,28 @@ classdef View < handle
 
         end
     end
-end
 
-function xPosition = CalxPosition(Mean)
-xPosition = Mean;
-DataGroup = size(Mean, 1);
-DataNumber = size(Mean, 2);
-Cali = 0.8 / DataGroup; %Calibration of the x-coordinate value of data points
-for Row = 1:DataGroup
-    for Column = 1:DataNumber
-        if(isnan(xPosition(Row, Column)))
-        else
-            FirstTerm = Column - Cali * (DataGroup - 1) / 2;
-            xPosition(Row, Column) = FirstTerm + Cali * (Row - 1); %Arithmetic series formula
+    methods
+        function ClearAllAxes(obj)
+            AxesNum = length(obj.hAxis);
+            for ii = 1:AxesNum
+                delete(obj.hAxis{ii});
+            end
         end
     end
 end
-end
+%
+% function xPosition = CalxPosition(Mean) xPosition = Mean; DataGroup =
+% size(Mean, 1); DataNumber = size(Mean, 2); Cali = 0.8 / DataGroup;
+% %Calibration of the x-coordinate value of data points for Row =
+% 1:DataGroup
+%     for Column = 1:DataNumber
+%         if(isnan(xPosition(Row, Column))) else
+%             FirstTerm = Column - Cali * (DataGroup - 1) / 2;
+%             xPosition(Row, Column) = FirstTerm + Cali * (Row - 1);
+%             %Arithmetic series formula
+%         end
+%     end
+% end end
 
 

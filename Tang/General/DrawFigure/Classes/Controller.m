@@ -11,6 +11,9 @@ classdef Controller < handle
         end
 
         function DataChangedCallback(obj, varargin)
+            if(any(cellfun(@(x) strcmp('PartialAnalyze', x), varargin)))
+                obj.ViewObj.ClearAllAxes();
+            end
             obj.ModelObj.DataModel.ChangeData(varargin{:});
         end
 
