@@ -1,12 +1,15 @@
 classdef View < handle
     properties
         ModelObj;
+        hDataListener;
+        hParametersListener;
         ControllerObj;
         appObj;
         hUIFig;
         hAxis;
         GridLayout;
         hFigs;
+        PartialAnalyze;
     end
 
     %Only 1 View object can be created by the static method GetView
@@ -22,90 +25,121 @@ classdef View < handle
 
     methods(Access = private)
         function obj = View(app)
-
             obj.appObj = app;
             obj.ModelObj = app.ModelObj;
             obj.ControllerObj = app.ControllerObj;
             obj.ControllerObj.ViewObj = obj;
-            obj.ModelObj.DataModel.addlistener('DataChanged', @obj.UpdateData);
-            obj.ModelObj.ParametersModel.addlistener('ParametersChanged', @obj.UpdateParameters);
+            obj.hDataListener = obj.ModelObj.DataModel.addlistener('DataChanged', @ obj.UpdateData);
+            obj.hParametersListener = obj.ModelObj.ParametersModel.addlistener('ParametersChanged', @obj.UpdateParameters);
 
-            obj.hUIFig = uifigure('Name', "Drawn Figure", ...
-                'HandleVisibility','on','Icon','Figures.jpg','AutoResizeChildren','off');
-            % obj.hUIFig.CloseRequestFcn = @(src,event) obj.ClearViewObj();
+            obj.CreateUIFig();
 
-
-            %set GridLayout to align the axes
-            obj.GridLayout = obj.CreateGridLayout();
-            obj.hUIFig.SizeChangedFcn = @(src,event) obj.UpdateGridLayout;
+            obj.PartialAnalyze = obj.ModelObj.DataModel.PartialAnalyze;
+            obj.hAxis = cell(1, length(obj.PartialAnalyze));
+            obj.hFigs = cell(1, length(obj.PartialAnalyze));
             obj.UpdateData();
-            obj.UpdateParameters();
         end
 
-        function UpdateData(obj)
-            PartialAnalyze = obj.ModelObj.DataModel.PartialAnalyze;
-            obj.hAxis = cell(1, length(PartialAnalyze));
-            obj.hFigs = cell(1, length(PartialAnalyze));
-            Dataset = obj.ModelObj.DataModel.Dataset;
-            DataGroup = size(Dataset, 1);
-            DataNumber = size(Dataset, 2);
+        function UpdateData(obj, ~, ~)
+
             MaxFig = 2;
 
-            for ii = PartialAnalyze
-                ActivehAxis = find(PartialAnalyze == ii, 1);
+            for ii = obj.PartialAnalyze %For each column, create an axis
+                ActivehAxis = find(obj.PartialAnalyze == ii, 1);
+                if(~isempty(obj.hAxis{ActivehAxis}))
+                    delete(obj.hAxis{ActivehAxis});
+                    % close(obj.hUIFig);
+                    % obj.CreateUIFig();
+                end
                 obj.hAxis{ActivehAxis} = uiaxes(obj.GridLayout);
                 set(obj.hUIFig, 'CurrentAxes', obj.hAxis{ActivehAxis});
                 obj.hAxis{ActivehAxis}.Layout.Row = ceil(ActivehAxis/MaxFig) ;
                 obj.hAxis{ActivehAxis}.Layout.Column = mod(ActivehAxis -1 , MaxFig) + 1;
-                Mean = zeros(DataGroup, DataNumber);
-                Error = zeros(DataGroup, DataNumber);
 
-                for jj = 1:DataGroup %Analyze each group
 
-                    for xx = 1:DataNumber %Analyze each sub-group
-                        if(~isempty(Dataset{jj, xx}))
-                            Title = string(Dataset{1,1}.Properties.VariableNames(ii)); %Get the current column title
-                            Mean(jj, xx) = mean(Dataset{jj, xx}.(Title));
-                            Error(jj, xx) = std(Dataset{jj, xx}.(Title)) / sqrt(length(Dataset{jj, xx}.(Title)));
-                            %Store Mean and Sem in the ResultTable
-                            % DataPosition = (jj - 1) * DataNumber +xx;
-                            % ResultT.Type(DataPosition) = [GroupNames{jj},
-                            % '_', NumberNames{xx}];
-                            % ResultT.Mean(DataPosition) = Mean(jj, xx);
-                            % ResultT.Sem(DataPosition) = Sem(jj, xx);
-                            % ResultT.SampleNumber(DataPosition) =
-                            % length(app.app.Dataset{jj, xx}.(Title));
 
-                            if (DataGroup == 2 && jj == 2 && ShowSig) %Calculate signiface when only 2 groups
-                                p = Independent_Two_Sample_TTest(Dataset{1, xx}.(Title), Dataset{2, xx}.(Title));%,OutlierRemove
-                                %ResultT.Significance(DataPosition) = p;
-                                YMaxNow = Significance_Line(xx, xx,Dataset{1, xx}.(Title), Dataset{2, xx}.(Title), p, 'k', 'Arial', 10, false);
-                                YMax = max(YMax, YMaxNow);
-                                hold on
-                            end
-                        end
+                obj.DrawSpecificFig(ii);
 
-                    end
+                %Store Mean and Sem in the ResultTable
+                % DataPosition = (jj - 1) * DataNumber +xx;
+                % ResultT.Type(DataPosition) = [GroupNames{jj}, '_',
+                % NumberNames{xx}]; ResultT.Mean(DataPosition) = Mean(jj,
+                % xx); ResultT.Sem(DataPosition) = Sem(jj, xx);
+                % ResultT.SampleNumber(DataPosition) =
+                % length(app.app.Dataset{jj, xx}.(Title));
 
-                    %Draw errorbar
-                    e = errorbar(1:DataNumber, Mean(jj, :), Error(jj, :));
-                    e.Marker = 'o';
-                    e.MarkerSize = 8;%0.8 * FontSize;
-                    hold on
-                end
+                % if (DataGroup == 2 && jj == 2 && ShowSig) %Calculate
+                % signiface when only 2 groups
+                %     p = Independent_Two_Sample_TTest(Dataset{1,
+                %     xx}.(Title), Dataset{2, xx}.(Title));%,OutlierRemove
+                %     %ResultT.Significance(DataPosition) = p; YMaxNow =
+                %     Significance_Line(xx, xx,Dataset{1, xx}.(Title),
+                %     Dataset{2, xx}.(Title), p, 'k', 'Arial', 10, false);
+                %     YMax = max(YMax, YMaxNow); hold on
+                % end
+
+
             end
 
             obj.UpdateParameters();
         end
 
-        function UpdateParameters(obj, ~, ~)
-            PartialAnalyze = obj.ModelObj.DataModel.PartialAnalyze;
+        function DrawSpecificFig(obj, ii)
+            Dataset = obj.ModelObj.DataModel.Dataset;
+            DataGroup = size(Dataset, 1);
+            DataNumber = size(Dataset, 2);
+            FigureType = obj.ModelObj.DataModel.FigureType;
+
+                
+                Mean = squeeze(obj.ModelObj.DataModel.Mean(ii, :, :));
+                Error = squeeze(obj.ModelObj.DataModel.Error(ii, :, :));
+
+            for jj = 1:DataGroup
+                switch FigureType
+                    case 'Line'
+                        obj.hFigs{jj} = errorbar(1:DataNumber,  Mean(jj, :), Error(jj, :));
+                        obj.hFigs{jj}.Marker = 'o';
+                        obj.hFigs{jj}.MarkerSize = 0.8 *obj.ModelObj.ParametersModel.FontSize;
+                    case 'Bar'
+                       obj.hFigs{jj} = bar(1:DataNumber, Mean.', 'grouped');
+                    case 'Box'
+                       DataPoints = squeeze(obj.ModelObj.DataModel.DataPoints(ii, :, :));
+                       yData = cell2mat(DataPoints(:));
+                       
+                      DataSize = cellfun(@(x) size(x,1), DataPoints);
+                      %DataSizeExpand =  DataSize(:);
+                      xGroupNum = sum(DataSize);
+                      xGroup = ones(sum(xGroupNum), 1);
+                      xOrder = [1, cumsum(xGroupNum)];
+
+                      Category = cell(DataGroup, DataNumber);
+                      for xx = 1:DataGroup
+                          for zz = 1:DataNumber
+                                   if(DataSize(xx,zz)~=0)
+                                       Category{xx,zz} = repmat(xx,DataSize(xx,zz), 1);
+                                   end
+                          end
+                      end
+                      Category = categorical(cell2mat(Category(:)));
+
+
+                      for xx = 1:DataNumber
+                          xGroup(xOrder(xx): xOrder(xx+1)) = xx;
+                      end
+
+                       obj.hFigs{jj} = boxchart(xGroup , yData, 'GroupByColor', Category);
+                end
+                hold on
+
+            end
+        end
+
+        function UpdateParameters(obj, src, event)
             Parameters = obj.ModelObj.ParametersModel;
             Dataset = obj.ModelObj.DataModel.Dataset;
 
-            for ii = 1:length(PartialAnalyze)
+            for ii = 1:length(obj.PartialAnalyze)
                 ActivehAxis = ii;
-                obj.hFigs{ActivehAxis}.Color = rand(1, 3);
 
                 ax = obj.hAxis{ActivehAxis};
                 XTickLabel = string(Parameters.XTickLabel);
@@ -113,7 +147,6 @@ classdef View < handle
                 FontName = string(Parameters.FontName);
                 FontSize = Parameters.FontSize;
                 Title = string(Dataset{1,1}.Properties.VariableNames(ii)); %Get the current column title
-
                 set(ax,'xticklabel', XTickLabel, 'Fontname', FontName, 'FontSize', FontSize);
                 xlabel(ax, XLabel, 'Fontname', FontName, 'FontSize', FontSize);
                 ylabel(ax, Title, 'Fontname', FontName, 'FontSize', FontSize, 'Interpreter', 'none');
@@ -123,12 +156,6 @@ classdef View < handle
 
         function GridLayout = CreateGridLayout(obj)
             GridLayout = uigridlayout('Parent', obj.hUIFig);
-            % GridLayout.ColumnWidth = {'1x'};
-            % GridLayout.RowHeight = {'1x'};
-            % GridLayout.ColumnSpacing = 0;
-            % GridLayout.RowSpacing = 0;
-            % GridLayout.Padding = [0 0 0 0];
-            % GridLayout.Scrollable = 'on';
         end
 
         % Changes arrangement of the app based on UIFigure width
@@ -143,13 +170,44 @@ classdef View < handle
                 % Change to a 2x2 grid
                 obj.GridLayout.RowHeight = {'1x'};
                 obj.GridLayout.ColumnWidth = {'1x'};
-   
             end
         end
 
+        function MyCloseRequest(obj, src)
+            delete(src);
+            delete(obj.hDataListener);
+            delete(obj.hParametersListener);
+        end
+
+
+        function CreateUIFig(obj)
+
+            obj.hUIFig = uifigure('Name', "Drawn Figure", ...
+                'HandleVisibility','on','Icon','Figures.jpg','AutoResizeChildren','off');
+
+            %set GridLayout to align the axes
+            obj.GridLayout = obj.CreateGridLayout();
+            obj.hUIFig.SizeChangedFcn = @(src,event) obj.UpdateGridLayout;
+            obj.hUIFig.CloseRequestFcn = @(src,event) obj.MyCloseRequest(src);
+
+        end
     end
 end
 
-
+function xPosition = CalxPosition(Mean)
+xPosition = Mean;
+DataGroup = size(Mean, 1);
+DataNumber = size(Mean, 2);
+Cali = 0.8 / DataGroup; %Calibration of the x-coordinate value of data points
+for Row = 1:DataGroup
+    for Column = 1:DataNumber
+        if(isnan(xPosition(Row, Column)))
+        else
+            FirstTerm = Column - Cali * (DataGroup - 1) / 2;
+            xPosition(Row, Column) = FirstTerm + Cali * (Row - 1); %Arithmetic series formula
+        end
+    end
+end
+end
 
 
