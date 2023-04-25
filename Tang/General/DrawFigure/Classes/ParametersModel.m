@@ -31,10 +31,11 @@ classdef ParametersModel < handle
         function ChangeParameters(obj, varargin)
             p = obj.ParametersParser;
             p.parse(varargin{:});
-            Fields = fields(p.Results);
-            for ii = 1:length(Fields)
-                obj.(Fields{ii}) = p.Results.(Fields{ii});
-            end
+          
+            ChangedResult = rmfield(p.Results, p.UsingDefaults);
+            ChangedField = fields(ChangedResult);
+            obj.(ChangedField{:}) = ChangedResult.(ChangedField{:});
+
             obj.notify('ParametersChanged');
         end
 

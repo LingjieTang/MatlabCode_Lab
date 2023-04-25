@@ -9,7 +9,7 @@ classdef View < handle
         hAxis;
         GridLayout;
         hFigs;
-        
+
     end
 
     properties(Dependent)
@@ -39,8 +39,8 @@ classdef View < handle
 
             obj.CreateUIFig();
 
-            obj.hAxis = cell(1, length(obj.PartialAnalyze));
-            obj.hFigs = cell(1, length(obj.PartialAnalyze));
+            obj.hAxis = cell(1, obj.ModelObj.DataModel.DataColumns);%cell(1, length(obj.PartialAnalyze));
+            obj.hFigs = cell(1, obj.ModelObj.DataModel.DataColumns);%cell(1, length(obj.PartialAnalyze));
             obj.UpdateData();
         end
 
@@ -151,33 +151,32 @@ classdef View < handle
                 set(ax,'xticklabel', XTickLabel, 'Fontname', FontName, 'FontSize', FontSize);
                 xlabel(ax, XLabel, 'Fontname', FontName, 'FontSize', FontSize);
                 ylabel(ax, Title, 'Fontname', FontName, 'FontSize', FontSize, 'Interpreter', 'none');
+
+                % %Resize the y-axis
+                % LimitY = ax.YLim;
+                % %LimitY(2) = max(LimitY(2), YMax);
+                % ylim(ax, [LimitY(1), LimitY(2) + 0.04 * (LimitY(2) - LimitY(1))])
+                % 
+                % %Resize the x-axis
+                % LimitX = ax.XLim;
+                % xlim(ax, [LimitX(1) - 0.04 * (LimitX(2) - LimitX(1)), LimitX(2) + 0.04 * (LimitX(2) - LimitX(1))])
             end
-
-            %Resize the y-axis
-            ylim auto
-            LimitY = ylim;
-            %LimitY(2) = max(LimitY(2), YMax);
-            ylim([LimitY(1), LimitY(2) + 0.04 * (LimitY(2) - LimitY(1))])
-
-            %Resize the x-axis
-            xlim auto
-            LimitX = xlim;
-            xlim([LimitX(1) - 0.04 * (LimitX(2) - LimitX(1)), LimitX(2) + 0.04 * (LimitX(2) - LimitX(1))])
 
         end
 
         function GridLayout = CreateGridLayout(obj)
-            GridLayout = uigridlayout('Parent', obj.hUIFig);
+            GridLayout = uigridlayout('Parent', obj.hUIFig,'Scrollable','on');
         end
 
         % Changes arrangement of the app based on UIFigure width
         function UpdateGridLayout(obj, ~)
             MiniWidth = 576;
-            currentFigureWidth = obj.hUIFig.Position(3);
+            currentFigureWidth = min(obj.hUIFig.Position(3), obj.hUIFig.Position(4));
             if(currentFigureWidth <= MiniWidth)
                 % Change to a 3x1 grid
-                obj.GridLayout.RowHeight = {MiniWidth};
-                obj.GridLayout.ColumnWidth = {MiniWidth};
+
+                obj.GridLayout.RowHeight = cellfun(@(x) MiniWidth, obj.GridLayout.RowHeight, UniformOutput=false);
+                obj.GridLayout.ColumnWidth = cellfun(@(x) MiniWidth, obj.GridLayout.ColumnWidth, UniformOutput=false);
             else
                 % Change to a 2x2 grid
                 obj.GridLayout.RowHeight = {'1x'};
@@ -195,7 +194,7 @@ classdef View < handle
         function CreateUIFig(obj)
 
             obj.hUIFig = uifigure('Name', "Drawn Figure", ...
-                'HandleVisibility','on','Icon','Figures.jpg','AutoResizeChildren','off');
+                'HandleVisibility','on','Icon','Figures.jpg','AutoResizeChildren','off','Scrollable', 'on');
 
             %set GridLayout to align the axes
             obj.GridLayout = obj.CreateGridLayout();

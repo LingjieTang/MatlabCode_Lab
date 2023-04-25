@@ -9,7 +9,7 @@ classdef DataModel < handle
         ShowError = false;
         Significance = false;
         LimitedData = false;
-        PartialAnalyze = 1;%[1,2,4];
+        PartialAnalyze = 1;
     end
 
     properties(Hidden)
@@ -17,6 +17,8 @@ classdef DataModel < handle
     end
 
     properties(Hidden, Dependent)
+        DataExample;
+        DataColumns;
         Dataset;
         DataPoints;
         Mean;
@@ -35,13 +37,14 @@ classdef DataModel < handle
         function ChangeData(obj, varargin)
             p = obj.DataParser;
             p.parse(varargin{:});
-            Fields = fields(p.Results);
-            for ii = 1:length(Fields)
-                obj.(Fields{ii}) = p.Results.(Fields{ii});
-                if(obj.PartialAnalyze == 0)
-                    obj.PartialAnalyze = size(obj.RawDataset, 2);
-                end
+
+            ChangedResult = rmfield(p.Results, p.UsingDefaults);
+            ChangedField = fields(ChangedResult);
+            obj.(ChangedField{:}) = ChangedResult.(ChangedField{:});
+            if(obj.PartialAnalyze == 0)
+                obj.PartialAnalyze = obj.DataColumns;
             end
+
             obj.notify('DataChanged');
         end
 
@@ -56,6 +59,15 @@ classdef DataModel < handle
 
         function Dataset = get.Dataset(obj)
             Dataset = cellfun(@(x) obj.TakePartialData(x), obj.RawDataset, UniformOutput=false);
+        end
+
+        function DataColumns = get.DataColumns(obj)
+            DataColumns = size(obj.DataExample, 2);
+        end
+
+        function DataExample = get.DataExample(obj)
+            [r, c] = find(cellfun(@isempty, obj.RawDataset) == 0,1);
+            DataExample = obj.RawDataset{r, c};
         end
 
         function PartialData = TakePartialData(obj, TotalData)
@@ -79,22 +91,21 @@ classdef DataModel < handle
         end
 
         function Result = GetMeanOrErrorOrDataPoints (obj, Type)
+            
+            RawDataGroup = size(obj.RawDataset, 1);
+            RawDataNumber = size(obj.RawDataset, 2);
             Empty = cellfun(@isempty, obj.RawDataset);
-            DataGroup = size(obj.RawDataset, 1);
-            DataNumber = size(obj.RawDataset, 2);
-
-            [r, c] = find(Empty == false, 1);
-            DataExample = obj.RawDataset{r, c};
-            ColumnNum = size(DataExample, 2);
-            Result = NaN(ColumnNum, DataGroup, DataNumber);
+            % [r, c] = find(Empty == false, 1);
+            % obj.DataExample = obj.RawDataset{r, c};
+            Result = NaN(obj.DataColumns, RawDataGroup, RawDataNumber);
             if(strcmp(Type, 'MyDataPoints'))
-                Result = cell(ColumnNum, DataGroup, DataNumber);
+                Result = cell(obj.DataColumns, RawDataGroup, RawDataNumber);
             end
 
-            for ii = 1:ColumnNum
-                Title = string(DataExample.Properties.VariableNames(ii)); %Get the current column title
-                for jj = 1:DataGroup
-                    for xx = 1:DataNumber
+            for ii = 1:obj.DataColumns
+                Title = string(obj.DataExample.Properties.VariableNames(ii)); %Get the current column title
+                for jj = 1:RawDataGroup
+                    for xx = 1:RawDataNumber
                         if(Empty(jj, xx) == false)
                             DataAnalyzing = obj.RawDataset{jj, xx}.(Title);
                             Result(ii, jj, xx) = feval(Type, DataAnalyzing);
