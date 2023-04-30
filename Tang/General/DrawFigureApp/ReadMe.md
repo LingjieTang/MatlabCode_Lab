@@ -29,9 +29,9 @@ The app opens the default raw dataset (.\Examples\RawDataset), you can use that 
 
 ## Citation
 
-[![DOI](https://zenodo.org/record/7880091#.ZE4w8P5BxPY)](https://zenodo.org/badge/latestdoi/60771923)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7880091.svg)]https://zenodo.org/badge/DOI/10.5281/zenodo.7880091.svg
 
 If you want to cite this repository, use 
 
 > Lingjie, Tang, 2023. Bar plot, Line chart, Box chart and Violin plot for Matlab, Github Project  
-> https://https://github.com/wasdijok/MatlabCode_Lab/edit/main/Tang/General/DrawFigureApp.md, DOI: 10.5281/zenodo.7880091
+> https://github.com/wasdijok/MatlabCode_Lab/tree/main/Tang/General/DrawFigureApp, DOI: 10.5281/zenodo.7880091
