@@ -1,0 +1,74 @@
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration build-checksum="1412145612" file="E:\GitHub\MatlabCode_Lab\Tang\General\DrawFigureApp\DrawFigure.prj" location="E:\GitHub\MatlabCode_Lab\Tang\General\DrawFigureApp" name="DrawFigure" target="target.mlapps" target-name="打包为 App">
+    <param.appname>DrawFigure</param.appname>
+    <param.authnamewatermark>Tang</param.authnamewatermark>
+    <param.email>tanglj0222@gmail.com; wasdiojk@126.com</param.email>
+    <param.company>Kyoto University, Kengaku Group</param.company>
+    <param.icon />
+    <param.icons />
+    <param.summary>To draw statistics figures</param.summary>
+    <param.description>Draw barplot, linechart, boxchart or violinplot</param.description>
+    <param.screenshot>C:\Users\hasee\AppData\Local\Temp\tpb8230d13_a554_443b_908f_d1695124a93e.png</param.screenshot>
+    <param.version>1.0</param.version>
+    <param.products.name>
+      <item>MATLAB</item>
+      <item>Statistics and Machine Learning Toolbox</item>
+    </param.products.name>
+    <param.products.id>
+      <item>1</item>
+      <item>19</item>
+    </param.products.id>
+    <param.products.version>
+      <item>9.14</item>
+      <item>12.5</item>
+    </param.products.version>
+    <param.platforms />
+    <param.output>${PROJECT_ROOT}</param.output>
+    <param.guid>6dfecfae-adb3-4188-b3f7-56322db56988</param.guid>
+    <unset>
+      <param.icon />
+      <param.icons />
+      <param.version />
+      <param.platforms />
+      <param.output />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\DrawFigure.mlapp</file>
+    </fileset.main>
+    <fileset.depfun />
+    <fileset.resources>
+      <file>${PROJECT_ROOT}</file>
+    </fileset.resources>
+    <fileset.package />
+    <build-deliverables>
+      <file location="E:\GitHub\MatlabCode_Lab\Tang\General" name="DrawFigureApp" optional="false">E:\GitHub\MatlabCode_Lab\Tang\General\DrawFigureApp</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>E:\MATLAB\R2023a</root>
+      <toolboxes>
+        <toolbox name="neuralnetwork" />
+      </toolboxes>
+      <toolbox>
+        <neuralnetwork>
+          <enabled>true</enabled>
+        </neuralnetwork>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
