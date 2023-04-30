@@ -26,3 +26,12 @@ First use .\Functions\CreateData.m to create your own raw dataset, hints are pro
 Then open the app and load your dataset, do what you want.
 
 The app opens the default raw dataset (.\Examples\RawDataset), you can use that one to explore the app first.
+
+## Citation
+
+[![DOI](https://zenodo.org/record/7880091#.ZE4w8P5BxPY)](https://zenodo.org/badge/latestdoi/60771923)
+
+If you want to cite this repository, use 
+
+> Lingjie, Tang, 2023. Bar plot, Line chart, Box chart and Violin plot for Matlab, Github Project  
+> https://https://github.com/wasdijok/MatlabCode_Lab/edit/main/Tang/General/DrawFigureApp.md, DOI: 10.5281/zenodo.7880091
