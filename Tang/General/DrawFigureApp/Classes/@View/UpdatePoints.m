@@ -52,7 +52,8 @@ for VariableNow = obj.PartialAnalyze
             hImages = findobj('Type', 'patch');
             hImages = hImages((ActivehAxis-1)*DataModel.DataRows*DataModel.DataColumns + 1 : ActivehAxis*DataModel.DataRows*DataModel.DataColumns);
             hImages = hImages(end:-1:1);
-            XJitterWidth = max(hImages(1).XData) - min(hImages(1).XData);
+            %0.9 is emperical
+            XJitterWidth = 0.9*max(hImages(1).XData) - min(hImages(1).XData);
             Xposition = zeros(DataModel.DataRows, DataModel.DataColumns);
             for ii = 1:length(hImages)
                 Xposition(ceil(ii/DataModel.DataColumns), mod(ii-1,DataModel.DataColumns)+1) = hImages(ii).XData(1);

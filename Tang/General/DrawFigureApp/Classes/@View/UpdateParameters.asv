@@ -23,18 +23,16 @@ for ii = 1:length(obj.PartialAnalyze)
     %Use length(string(ParametersModel.XTickLabel)) rather than
     %length(DataModel.Rows) in case some ticks are not required to be
     %displayed
-    xticks(1:length(XTickLabel));
+    temp = textscan(ParametersModel.XTickLabel,'%s','Delimiter',' ');
+    temp = temp{:};
+    xticks(1:length(temp));
 
     %Set parameters for y-axis
-
-    if(isempty(ParametersModel.YLabel{:}))
-        YLabel = string(DataModel.RawDataVariableNames(obj.PartialAnalyze(ii)));
-    else
-        YLabel = textscan(ParametersModel.YLabel{:},'%s','Delimiter',',');
-        YLabel = YLabel{:};
-        YLabel = YLabel{ii};
-    end
+    YLabel = string(DataModel.RawDataVariableNames(obj.PartialAnalyze(ii)));
     ylabel(YLabel, 'Interpreter', 'none');
+
+    %Resize x and y axis
+    obj.ResizeAxis();
 
     %Show axis box or not
     if(ParametersModel.ShowAxisBox)
@@ -42,11 +40,6 @@ for ii = 1:length(obj.PartialAnalyze)
     else
         set(gca, 'Box', 'off')
     end
-
-    %Resize x and y axis
-    obj.ResizeAxis();
-
-
 end
 
 end

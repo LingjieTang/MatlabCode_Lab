@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1412145612" file="E:\GitHub\MatlabCode_Lab\Tang\General\DrawFigureApp\DrawFigure.prj" location="E:\GitHub\MatlabCode_Lab\Tang\General\DrawFigureApp" name="DrawFigure" target="target.mlapps" target-name="打包为 App">
+  <configuration build-checksum="3629315686" file="E:\GitHub\MatlabCode_Lab\Tang\General\DrawFigureApp\DrawFigure.prj" location="E:\GitHub\MatlabCode_Lab\Tang\General\DrawFigureApp" name="DrawFigure" target="target.mlapps" target-name="打包为 App">
     <param.appname>DrawFigure</param.appname>
     <param.authnamewatermark>Tang</param.authnamewatermark>
     <param.email>tanglj0222@gmail.com; wasdiojk@126.com</param.email>
@@ -8,7 +8,7 @@
     <param.icons />
     <param.summary>To draw statistics figures</param.summary>
     <param.description>Draw barplot, linechart, boxchart or violinplot</param.description>
-    <param.screenshot>C:\Users\hasee\AppData\Local\Temp\tpb8230d13_a554_443b_908f_d1695124a93e.png</param.screenshot>
+    <param.screenshot>C:\Users\hasee\AppData\Local\Temp\tp08d94f77_4afe_4c35_8d46_04eeab026416.png</param.screenshot>
     <param.version>1.0</param.version>
     <param.products.name>
       <item>MATLAB</item>

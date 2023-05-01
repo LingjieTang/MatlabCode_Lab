@@ -6,6 +6,7 @@ classdef ParametersModel < handle
         FontSize = 10;
         Title = 'Num of 1st dendrites';
         ShowAxisBox = true;
+        YLabel = '';
     end
 
     properties(Hidden)
