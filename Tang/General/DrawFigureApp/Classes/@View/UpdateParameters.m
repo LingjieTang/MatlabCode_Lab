@@ -27,8 +27,12 @@ for ii = 1:length(obj.PartialAnalyze)
 
     %Set parameters for y-axis
 
-    if(isempty(ParametersModel.YLabel{:}))
-        YLabel = string(DataModel.RawDataVariableNames(obj.PartialAnalyze(ii)));
+    if(isempty(ParametersModel.YLabel))
+        if(isempty(DataModel.RawDataExample.Properties.VariableDescriptions)) %If the head of table is legal
+            YLabel = string(DataModel.RawDataVariableNames(obj.PartialAnalyze(ii)));
+        else
+            YLabel = string(DataModel.RawDataExample.Properties.VariableDescriptions(obj.PartialAnalyze(ii)));
+        end        
     else
         YLabel = textscan(ParametersModel.YLabel{:},'%s','Delimiter',',');
         YLabel = YLabel{:};

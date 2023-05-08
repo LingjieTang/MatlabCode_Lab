@@ -13,9 +13,10 @@ switch error_code
         per_neuron_results(k,3) = {Classified_processes.TimestampEnd};
 
         % total_neurite_length
-        sklI_noSoma = Classified_processes.Initial_skeleton .* (~ bwmorph(Classified_processes.cBody,'thin',1));
-        per_neuron_results(k,4) = {pix_size * nnz(sklI_noSoma)};
+        % sklI_noSoma = Classified_processes.Initial_skeleton .* (~ bwmorph(Classified_processes.cBody,'thin',1));
+        % per_neuron_results(k,4) = {pix_size * nnz(sklI_noSoma)};
         %Hide Data
+        per_neuron_results(k,4) = {NaN};
         per_neuron_results(k,5) = {NaN};
         per_neuron_results(k,6) = {NaN};
         per_neuron_results(k,7) = {NaN};
@@ -26,6 +27,7 @@ switch error_code
         per_neuron_results(k,12) = {NaN};
         per_neuron_results(k,13) = {NaN};
         per_neuron_results(k,14) = {NaN};
+        %per_neuron_results(k,15) = {NaN};
         % % soma_size per_neuron_results(k,5) = {pix_size * pix_size *
         % nnz(Classified_processes.cBody)}; % axon_length
         % per_neuron_results(k,6) = {pix_size *
@@ -67,55 +69,70 @@ switch error_code
         % * pix_size};
 
 
-        % dendrite_number
-        dendrite_number = size(Classified_processes.Neurites);
-        per_neuron_results(k,15) = {dendrite_number(1)};
+        % % 1st dendrite_number
+        % dendrite_number = size(Classified_processes.Neurites);
+        % per_neuron_results(k,15) = {dendrite_number(1)};
+
         % dendrite_length
-        len = 0; len2 = 0;Str = "";
+        len = 0;
+        len2 = 0;Str = "";
         for ii = 1:length(Classified_processes.Neurites)
-          Dendrite = Classified_processes.Neurites{ii};
+           Dendrite = Classified_processes.Neurites{ii};
            [r,c] = find(bwmorph(Dendrite,'endpoints'));
-           lennow = pix_size * max(max(bwdistgeodesic(Dendrite,c(1),r(1),'quasi-euclidean')));
+           lennow = pix_size * CalculateLength(Dendrite, 'Method','geodesic', 'Seed',[r(1),c(1)]);
            %Test(Dendrite);
            len = len + lennow;
 
-           len2now = regionprops(Dendrite,'Perimeter');
-           len2now = pix_size *len2now.Perimeter/2;
+           len2now = pix_size * CalculateLength(Dendrite);
            len2 = len2 + len2now;
 
            Str = strcat(Str, sprintf("gdf:%f, para:%f. ", lennow, len2now));
         end            
         Str = strcat(Str, sprintf("  total %f,  %f", len, len2));
-          per_neuron_results(k,16) = {Str};
+        per_neuron_results(k,15) = {Str};
 
         % Dendrite branches
         dendrite_branch_points = 0;
-        dendrite_branch_length = 0;
+        %dendrite_branch_length = 0;
+        dendrite_branch_length = len;
         for l = 2:length(find((cellfun(@isempty, Classified_processes.NeuriteBranches)) == 0))
             num = size(Classified_processes.NeuriteBranches{l},1);
             dendrite_branch_points = dendrite_branch_points + num(1);
 
             % len = nnz(cell2mat(Classified_processes.NeuriteBranches{l}));
-            len = regionprops(cell2mat(Classified_processes.NeuriteBranches{l}),'Perimeter');
-            len = len.Perimeter/2;
+            WholeBranches = cell2mat(Classified_processes.NeuriteBranches{l});
+            [Row, Column] = find(bwmorph(WholeBranches, "endpoints"));
+            for ii = 1:length(Row)
+                len = CalculateLength(WholeBranches, 'Method', 'geodesic', 'Seed', [Row(ii), Column(ii)]);
+                dendrite_branch_length = dendrite_branch_length + pix_size *len/2;
+            end
+
+            %len = sum(CalculateLength(WholeBranches));
 
             % % Geodesic Distance Transform:
             % [r,c] = find(bwmorph(cell2mat(Classified_processes.NeuriteBranches{l}),'endpoints'));
             %  len = max(max(bwdistgeodesic(cell2mat(Classified_processes.NeuriteBranches{l}),c(1),r(1),'quasi-euclidean')));
 
-            dendrite_branch_length = dendrite_branch_length + len;
+            % dendrite_branch_length = dendrite_branch_length + len;
         end
 
-        per_neuron_results(k,17) = {dendrite_branch_points};
+        per_neuron_results(k,16) = {dendrite_branch_length};
+
+        per_neuron_results(k,17) = {NaN};
+         per_neuron_results(k,18) = {NaN};
+        % per_neuron_results(k,17) = {dendrite_branch_points};
         %dendrite_branch_length =
-        per_neuron_results(k,18) = {dendrite_branch_length * pix_size};
+        % per_neuron_results(k,18) = {dendrite_branch_length * pix_size};
 
         % % Total axon length per_neuron_results(k,19) = {
         % per_neuron_results{k,6} +  per_neuron_results{k,14}};
         per_neuron_results(k,19) = {NaN};
         % No comment
         per_neuron_results(k,20) = {''};
-        per_neuron_results(k,4) = {per_neuron_results{k,16} + per_neuron_results{k,18}};
+        % per_neuron_results(k,4) = {per_neuron_results{k,16} + per_neuron_results{k,18}};
+        %1st and 2nd dendrite num
+            per_neuron_results{k,21} = size(Classified_processes.NeuriteBranches{1}, 1);
+            per_neuron_results{k,22} = size(Classified_processes.NeuriteBranches{2}, 1);
 
     case 'excluded'
         % how is k dealt with here? or with the others?
@@ -138,6 +155,8 @@ switch error_code
         per_neuron_results(k,18) = {NaN};
         per_neuron_results(k,19) = {NaN};
         per_neuron_results(k,20) = {'Excluded after segmentation'};
+        per_neuron_results(k,21) = {NaN};
+        per_neuron_results(k,22) = {NaN};
 
     case 'no soma'
         % no soma detected -> nothing summarized
@@ -160,6 +179,8 @@ switch error_code
         per_neuron_results(k,18) = {NaN};
         per_neuron_results(k,19) = {NaN};
         per_neuron_results(k,20) = {'No soma detected'};
+        per_neuron_results(k,21) = {NaN};
+        per_neuron_results(k,22) = {NaN};
 
     case 'no neurites'
         per_neuron_results(k,2) = {Classified_processes.TimestampStart};
@@ -187,17 +208,18 @@ switch error_code
         per_neuron_results(k,18) = {NaN};
         per_neuron_results(k,19) = {NaN};
         per_neuron_results(k,20) = {'No neurites detected'};
+        per_neuron_results(k,21) = {NaN};
+        per_neuron_results(k,22) = {NaN};
 end
 
-%1st and 2nd dendrite num
-per_neuron_results(k,21) = size(Classified_processes.NeuriteBranches{2}, 1);
-per_neuron_results(k,22) = size(Classified_processes.NeuriteBranches{3}, 1);
 
 % Headers
-header = {'NeuronIndex', 'TimeStart', 'TimeEnd',  'TotalNeuriteLength', 'SomaSize' , 'PrimaryAxonLength', 'PrimBranchNum' , 'PrimBranchLength', 'SecBranchNum' , 'SecBranchLength', 'TertBranchNum' , 'TertBranchLength', 'AxonBranchPoints', 'AxonBranchLength', 'DendriteNum' , 'TotalDendriteLength', 'DendBranchNum' , 'DendBranchLen', 'TotalAxonLength','Comment', '1stDenderiteNum', '2ndDendriteNum'};
+header = {'NeuronIndex', 'TimeStart', 'TimeEnd',  'TotalNeuriteLength', 'SomaSize' ,...
+    'PrimaryAxonLength', 'PrimBranchNum' , 'PrimBranchLength', 'SecBranchNum' , 'SecBranchLength',...
+    'TertBranchNum' , 'TertBranchLength', 'AxonBranchPoints', 'AxonBranchLength', 'DendriteNum' ,...
+    'Total_length', 'DendBranchNum' , 'DendBranchLen', 'TotalAxonLength','Comment',...
+    'No_of_primary_dendrite', 'No_of_secondary_dendrite'};
 per_neuron_results.Properties.VariableNames = header;
-
-
 
 
 end

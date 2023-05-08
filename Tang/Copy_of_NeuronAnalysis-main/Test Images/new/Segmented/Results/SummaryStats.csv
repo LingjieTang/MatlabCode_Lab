@@ -1,2 +1,0 @@
-NeuronIndex,TimeStart,TimeEnd,TotalNeuriteLength,SomaSize,PrimaryAxonLength,PrimBranchNum,PrimBranchLength,SecBranchNum,SecBranchLength,TertBranchNum,TertBranchLength,AxonBranchPoints,AxonBranchLength,DendriteNum,TotalDendriteLength,DendBranchNum,DendBranchLen,TotalAxonLength,Comment
-Seg_16.tif,2023/04/19 13:14:52,2023/04/19 13:14:56,383.6917,49.74093733,243.7358,1,17.1836,0,0,0,0,1,17.1836,3,101.0667,1,13.3399,260.9194,

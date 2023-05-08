@@ -1,4 +1,4 @@
-function [Branches, newSkl, newEndPoints] = findNextOrderBranch(inputSkl, higherOrderPath, prevEndPoints, MIN_LEN)
+function [Branches, newSkl, newEndPoints] = findNextOrderBranch(inputSkl, higherOrderPath, prevEndPoints, MIN_LEN, gap_size_pixel)
 %findNextOrderBranch returns longest paths originating from inputPath
     
     % reduce higherOrderPaths to one mask 
@@ -49,7 +49,7 @@ disp('...finding');
   
 %% check for overlap
 disp('...refining');
-  [newSkl, Branches, newEndPoints ] = fixOverlap(newSkl, NewStartPoints, Branches, newEndPoints, MIN_LEN );
+  [newSkl, Branches, newEndPoints ] = fixOverlap(newSkl, NewStartPoints, Branches, newEndPoints, MIN_LEN, gap_size_pixel);
 
 
 
