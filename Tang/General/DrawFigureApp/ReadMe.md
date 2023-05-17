@@ -33,4 +33,4 @@ The app opens the default raw dataset (.\Examples\RawDataset), you can use that 
 If you want to cite this repository, use 
 
 > Lingjie, Tang, 2023. Bar plot, Line chart, Box chart and Violin plot for Matlab, Github Project  
-> https://github.com/wasdijok/MatlabCode_Lab/tree/main/Tang/General/DrawFigureApp, DOI: 10.5281/zenodo.7880091
+> [https://github.com/wasdijok/MatlabCode_Lab/tree/main/Tang/General/DrawFigureApp](https://github.com/LingjieTang/MatlabCode_Lab/edit/main/Tang/General/DrawFigureApp), DOI: 10.5281/zenodo.7880091
