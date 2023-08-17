@@ -1,4 +1,6 @@
 function [] = EnhanceImages(app, wbar)
+function [] = EnhanceImages()
+%To enhance and binarize neuron images
 
 % pNameSeg = 'G:\OneDrive - Kyoto University\Imaging\44.
 % 230422_Dragonfly_CGC_B6BasalCurveAndTTXAPV\DIV3\WT';
