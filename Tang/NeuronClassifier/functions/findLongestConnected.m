@@ -1,5 +1,6 @@
 function [tempP, endPoint, inputSkl] = findLongestConnected(start, inputSkl)
-%findLongestConnected will find the longest path in a branch given a starting point
+%findLongestConnected will find the longest path in a branch given a
+%starting point and will not include circle between 2 startpoints
     
     % only start if the starting point is still in the skeleton
     if ~ismember( start, find(inputSkl))
@@ -19,7 +20,7 @@ function [tempP, endPoint, inputSkl] = findLongestConnected(start, inputSkl)
 
     % detect if the max-distance is not reached at an endpoint (= circular paths in the skeleton)
     % find endpoints of the current skeleton 
-    endPoints=find(bwmorph(inputSkl,'endpoints'));
+     endPoints= find(bwmorph(inputSkl,'endpoints'));
 
     % if none of the endPoints is found on the connected parts, skip it
     if sum(ismember(endPoints, find(~isnan(D2))))==0
@@ -36,7 +37,7 @@ function [tempP, endPoint, inputSkl] = findLongestConnected(start, inputSkl)
 
             % find index of maximal distance of start point
             [max_val , endPoint] = max(D2(:));
-            endPoints=find(bwmorph(inputSkl,'endpoints'));
+            endPoints= find(bwmorph(inputSkl,'endpoints'));
         end
 
         % after fixing circles find the direct path between those points

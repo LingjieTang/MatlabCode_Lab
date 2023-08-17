@@ -24,6 +24,24 @@ newEndPoints = zeros(size(NeuriteStartPoints));
 
 %% for each starting point find longest path in skeleton
 disp('finding neurites');
+
+% %Refine 'noBody'
+% endPoints= find(bwmorph(noBody,'endpoints'));
+% [endPointsR,  endPointsC] =  ind2sub(size(noBody), endPoints);
+% [NeuriteStartPointsR, NeuriteStartPointsC] =  ind2sub(size(noBody), NeuriteStartPoints);
+% 
+% for xx = 1:length(endPoints)
+%     Distance = [endPointsR(xx), endPointsC(xx)] - [NeuriteStartPointsR, NeuriteStartPointsC];
+%     MaxAbsDistance = max(abs(Distance(:,1)), abs(Distance(:,2)));
+%      %If the endpoint is a startpoint, or the distance to all start points >
+%     %2 pixels, skip it
+%     while (~ismember(endPoints(xx), NeuriteStartPoints) && any(MaxAbsDistance<=2))
+%         noBody(endPoints(xx)) = false;
+%         endPoints= find(bwmorph(noBody,'endpoints'));
+%     end  
+% end
+% NeuriteStartPoints = intersect(NeuriteStartPoints,  find(bwmorph(noBody,'endpoints')));
+
 for k = flip(1:nnz(NeuriteStartPoints)) % going backwards (in case one is removed)
 
     [Neurites{k}, newEndPoints(k), noBody] = findLongestConnected(NeuriteStartPoints(k), noBody);

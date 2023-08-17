@@ -31,8 +31,9 @@ classdef NonCallbackModel
         end
 
         function SaveFigures(obj)
-            FigPath = strcat('Exported/', string(datetime), '. ', obj.SaveFormat);
+            FigPath = strcat('Exported_', string(datetime), '. ', obj.SaveFormat);
             FigPath = strrep(FigPath, ':', '_');
+            FigPath = strrep(FigPath, '/', '_');
             exportgraphics(gcf, FigPath, 'Resolution', obj.Resolution)
 
             %TabPath = strcat('Analysis/', string(ii), '. ', Title,
