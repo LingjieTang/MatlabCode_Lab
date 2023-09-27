@@ -21,7 +21,7 @@
 clc
 clear
 
-LoadPath = 'G:\Imaging\40. 230309_FV1000_CGC_B6cKOBasalCurve\cont_DIV7\trace';
+LoadPath = 'H:\ToMeiran\Data\cont_DIV3\trace Ding';
 SavePath = [LoadPath, '\Data_by_Matlab.xlsx'];
 LengthThre = 5; %The length threshold that a process is thought as a dendrite
 

@@ -10,13 +10,27 @@ function CreateData()
 %
 %If you have many parallel repeat (do 1 exp. condition 3 times), just
 %concatenate them into 1 table.
-Row = 1;
-Column = 3;
+Row = 8;
+Column = 2;
 RawDataset = cell(Row,Column);
 
-RawDataset{1, 1} = readtable('G:\0.PreviousMembers\Organized_by_Tang\Inoue_Statistic\WT.xlsx');
-RawDataset{1, 2} = readtable('G:\0.PreviousMembers\Organized_by_Tang\Inoue_Statistic\Hetero.xlsx');
-RawDataset{1, 3} = readtable('G:\0.PreviousMembers\Organized_by_Tang\Inoue_Statistic\Homo.xlsx');
+RawDataset{1, 1} = readtable('H:\ToMeiran\Data\cont_DIV3\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{2, 1} = readtable('H:\ToMeiran\Data\cont_DIV4\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{3, 1} = readtable('H:\ToMeiran\Data\cont_DIV5\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{4, 1} = readtable('H:\ToMeiran\Data\cont_DIV6\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{5, 1} = readtable('H:\ToMeiran\Data\cont_DIV7\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{6, 1} = readtable('H:\ToMeiran\Data\cont_DIV9\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{7, 1} = readtable('H:\ToMeiran\Data\cont_DIV11\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{8, 1} = readtable('H:\ToMeiran\Data\cont_DIV14\trace Ding\Data_by_Matlab.xlsx');
+
+RawDataset{1, 2} = readtable('H:\ToMeiran\Data\cKO_DIV3\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{2, 2} = readtable('H:\ToMeiran\Data\cKO_DIV4\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{3, 2} = readtable('H:\ToMeiran\Data\cKO_DIV5\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{4, 2} = readtable('H:\ToMeiran\Data\cKO_DIV6\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{5, 2} = readtable('H:\ToMeiran\Data\cKO_DIV7\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{6, 2} = readtable('H:\ToMeiran\Data\cKO_DIV9\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{7, 2} = readtable('H:\ToMeiran\Data\cKO_DIV11\trace Ding\Data_by_Matlab.xlsx');
+RawDataset{8, 2} = readtable('H:\ToMeiran\Data\cKO_DIV14\trace Ding\Data_by_Matlab.xlsx');
 % RawDataset{2, 1} = [readtable('G:\Imaging\31.
 % 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV4\trace\Data_by_Matlab.xlsx');
 % ...
@@ -63,6 +77,6 @@ RawDataset{1, 3} = readtable('G:\0.PreviousMembers\Organized_by_Tang\Inoue_Stati
 % RawDataset{6,3} =  readtable('G:\Imaging\31.
 % 221216_FV1000_GCs_ICR_ActivityOnDendrite_40x\DIV11_15mMK+\trace\Data_by_Matlab.xlsx');
 
-save('..\Exported\RawDatasetOfInoue.mat', "RawDataset");
+save('..\Exported\RawDatasetOfKokaji.mat', "RawDataset");
 end
 
